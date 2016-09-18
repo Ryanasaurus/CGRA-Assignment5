@@ -1,0 +1,27 @@
+CGRA 151, T2 2016, Assignment 5 Plan
+
+Student name: Ryan Cherry
+Student ID: 300339331
+Name of game/artwork: Bomberman
+
+Vision
+1. Game concept: 
+	A game that is based on the old retro game bomberman. To be played with up to 4 players, in a deathmatch where players try to blow the other players up while not getting blown up themselves.
+
+2. Game play: 
+	There will be 2 parts, a menu system that allows for different amounts of players to play and key bindings to be edited, and the actual game itself. Maps will be randomly generated, with walls and bricks in a 32x32 grid. The boxes can be blown up, and can contain powerups in them, while the walls cannot be destroyed. Players have to use the environment to try and trap other players and blow them up, while avoiding getting blown up by the other players.
+
+3. Visual design: 
+	The graphics will be very minimalistic, and will try to keep as true to the original game as possible. There will be lots of green and grey for the environment, and the characters and explosions will try have a similar feel about them as well.
+
+Timetable
+1. A core working program (done by 27 September): 
+	The lobby and settings system working, and a bare bones map being generated and players able to move
+
+2. A reasonable submission (by 4 October): 
+	All gameplay elements with minimal graphics. The textures will be incomplete, but everything else will be working
+
+3. A well-polished submission (by 11 October): Complete game, with better textures.
+
+
+

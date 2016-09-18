@@ -1,0 +1,75 @@
+#Lines starting with # are ignored
+#Format is Player Number (0,1,2,3), Function, Key
+#This can be changed in game (Currently does not save after shutdown
+#
+#Player 1
+#
+0
+up
+w
+0
+down
+s
+0
+left
+a
+0
+right
+d
+0
+bomb
+q
+#
+#Player 2
+#
+1
+up
+t
+1
+down
+g
+1
+left
+f
+1
+right
+h
+1
+bomb
+r
+#
+#Player 3
+#
+2
+up
+i
+2
+down
+k
+2
+left
+j
+2
+right
+l
+2
+bomb
+u
+#
+#Player 4
+#
+3
+up
+38
+3
+down
+40
+3
+left
+37
+3
+right
+39
+3
+bomb
+(space)
