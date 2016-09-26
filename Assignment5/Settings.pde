@@ -12,7 +12,14 @@ class Settings{
     buttons.add(new Button(4*width/5, 30, width/6, height/20, "Player 4 Keys", 168, 168, 168));
   }
   
-  public void loadKeys(){}
+  public void loadKeys(){
+    //String lines[] = loadStrings("keymap.txt");
+    //for(int i=0; i<lines.length; i++){
+    //  if(!lines[i].contains("#")){
+    //    rect(10, 10, 10, i*10);
+    //  }
+    //}
+  }//method to load key bindings from text file
   
   public void drawSettings(){
     for(Button button : buttons){

@@ -3,6 +3,7 @@ Button [] button;
 String location;
 GameLobby lobby;
 Settings settings;
+Game game;
 
 void setup() {
   fullScreen();
@@ -16,9 +17,11 @@ void setup() {
   lobby = new GameLobby(); //creating the game lobby
   settings = new Settings(lobby);
   settings.loadKeys();
+  game = new Game();
 }
 
 void draw() {
+  
   //draws the main menu
   if (location.equals("main-menu")) {
     background(0);
@@ -28,17 +31,23 @@ void draw() {
     }
     image(logo, width/2-width/8, height/2-height/4);
   } 
-  
+
   //draws the settings menu. allows for the changing of keys for different players
-  else if(location.equals("settings")){
+  else if (location.equals("settings")) {
     background(0);
     settings.drawSettings();
   }
-  
+
   //draws the game lobby
   else if (location.equals("game-lobby")) {
     background(0);
     lobby.drawLobby();
+  }
+
+  //draws the game
+  else if (location.equals("game")) {
+    background(0);
+    game.drawMap();
   }
 }
 
@@ -61,7 +70,7 @@ void mouseClicked() {
         break;
       }
     }
-    if(lobby.back.highlighted){
+    if (lobby.back.highlighted) {
       clickedButton = true;
       buttonClicked = lobby.back;
     }
@@ -71,7 +80,7 @@ void mouseClicked() {
   }
   if (clickedButton && buttonClicked!=null) {
     if (location.equals("game-lobby")) {
-      
+
       //player 1's button was clicked. drops the player in or out of the game
       if (buttonClicked.name.contains("1")) {
         if (lobby.players[0].inGame) {
@@ -82,7 +91,7 @@ void mouseClicked() {
           lobby.addPlayer();
         }
       } 
-      
+
       //player 2's button was clicked. drops the player in or out of the game
       else if (buttonClicked.name.contains("2")) {
         if (lobby.players[1].inGame) {
@@ -93,7 +102,7 @@ void mouseClicked() {
           lobby.addPlayer();
         }
       } 
-      
+
       //player 3's button was clicked. drops the player in or out of the game
       else if (buttonClicked.name.contains("3")) {
         if (lobby.players[2].inGame) {
@@ -104,7 +113,7 @@ void mouseClicked() {
           lobby.addPlayer();
         }
       } 
-      
+
       //player 4's button was clicked. drops the player in or out of the game
       else if (buttonClicked.name.contains("4")) {
         if (lobby.players[3].inGame) {
@@ -114,16 +123,46 @@ void mouseClicked() {
           lobby.players[3].dropIn();
           lobby.addPlayer();
         }
-      }
-      else if (buttonClicked.name.equals("Back")){
+      } else if (buttonClicked.name.equals("Back")) {
         location = "main-menu";
       }
     }
     if (buttonClicked.name.equals("Play")) {
-      location = "game-lobby";
-    }
-    else if (buttonClicked.name.equals("Settings")){
+      //location = "game-lobby";
+      location = "game";
+      game.newMap();
+    } else if (buttonClicked.name.equals("Settings")) {
       location = "settings";
     }
   }
 }
+
+void keyPressed() {
+    if (key == 'w' || key == 'W') {
+      game.keysPressed[0]=true;
+    }
+    if (key == 'a' || key == 'A') {
+      game.keysPressed[1]=true;
+    }
+    if (key == 's' || key == 'S') {
+      game.keysPressed[2]=true;
+    }
+    if (key == 'd' || key == 'D') {
+      game.keysPressed[3]=true;
+    }
+  }
+
+  void keyReleased() {
+    if (key == 'w' || key == 'W') {
+      game.keysPressed[0]=false;
+    }
+    if (key == 'a' || key == 'A') {
+      game.keysPressed[1]=false;
+    }
+    if (key == 's' || key == 'S') {
+      game.keysPressed[2]=false;
+    }
+    if (key == 'd' || key == 'D') {
+      game.keysPressed[3]=false;
+    }
+  }

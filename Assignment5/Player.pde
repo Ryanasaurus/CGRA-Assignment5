@@ -1,6 +1,7 @@
 class Player {
   int num; 
   int red, green, blue;
+  int x, y;
   boolean inGame;
   Button lobbyButton;
   HashMap<String, String> keyMap;
@@ -12,7 +13,7 @@ class Player {
     inGame = false;
     lobbyButton = new Button(num * width/5, height/2, width/8, height/20, "Player " + num, 168, 168, 168);
     lobbyButton.num=this.num-1;
-    keyMap = new HashMap<String, String>();
+    keyMap = new HashMap<String, String>(); //maps key to action
   }
 
   public void dropIn() {
