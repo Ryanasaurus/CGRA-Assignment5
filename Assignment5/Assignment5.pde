@@ -4,6 +4,8 @@ String location;
 GameLobby lobby;
 Settings settings;
 Game game;
+int countDown = 5;
+
 
 void setup() {
   fullScreen();
@@ -17,11 +19,11 @@ void setup() {
   lobby = new GameLobby(); //creating the game lobby
   settings = new Settings(lobby);
   settings.loadKeys();
-  game = new Game();
+  game = new Game(this.lobby);
 }
 
 void draw() {
-  
+
   //draws the main menu
   if (location.equals("main-menu")) {
     background(0);
@@ -46,10 +48,24 @@ void draw() {
 
   //draws the game
   else if (location.equals("game")) {
-    background(0);
-    game.drawMap();
+    if (game.gameRunning) {
+      frameRate(60);
+      background(0);    
+      game.drawMap();
+    } else {
+      background(0);
+      game.drawMap();
+      fill(255);
+      textSize(100);
+      text(countDown, width/2-(height/game.mapWidth)/4, height/4);
+      countDown--;
+      if (countDown==0) {
+        countDown = 5;
+        game.gameRunning = true;
+      }
+    }
   }
-}
+} 
 
 void mouseClicked() {
   boolean clickedButton = false;
@@ -131,6 +147,7 @@ void mouseClicked() {
       //location = "game-lobby";
       location = "game";
       game.newMap();
+      frameRate(1);
     } else if (buttonClicked.name.equals("Settings")) {
       location = "settings";
     }
@@ -138,6 +155,7 @@ void mouseClicked() {
 }
 
 void keyPressed() {
+  if (game.gameRunning) {
     if (key == 'w' || key == 'W') {
       game.keysPressed[0]=true;
     }
@@ -151,8 +169,10 @@ void keyPressed() {
       game.keysPressed[3]=true;
     }
   }
+}
 
-  void keyReleased() {
+void keyReleased() {
+  if (game.gameRunning) {
     if (key == 'w' || key == 'W') {
       game.keysPressed[0]=false;
     }
@@ -166,3 +186,4 @@ void keyPressed() {
       game.keysPressed[3]=false;
     }
   }
+}
