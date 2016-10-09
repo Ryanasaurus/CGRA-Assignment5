@@ -17,6 +17,7 @@ class Player {
     lobbyButton.num=this.num-1;
     keyMap = new HashMap<String, String>(); //maps key to action
     bombsHeld = 3;
+    power = 1;
   }
 
   public void dropIn() {

@@ -24,18 +24,12 @@ class Game {
   public void newMap() {
 
     this.players = lobby.players;
-
-    //    players[0].x = width/2;
-    //    players[0].y = height/2;
     for (int i=0; i<mapWidth; i++) {
       for (int j=0; j<mapHeight; j++) {
         squares[i][j] = new PVector((width-height)/2+(height/mapWidth)*i, (height/mapHeight)*j);
-        //squares[i][j].x = (width-height)/2+(height/mapWidth)*i;
-        //squares[i][j].y = (height/mapHeight)*j;
         double randomNumber = random(10);
         if (randomNumber>8) {
           map[i][j] = "wall";
-          //map[i][j] = "blank";
         } else {
           map[i][j] = "blank";
         }
@@ -57,15 +51,8 @@ class Game {
   }
 
   public void drawMap() {
-    bombRefreshCounter++;
-    if (bombRefreshCounter>300) {
-      bombRefreshCounter = 0;
-      for (Player player : players) {
-        player.getBomb();
-      }
-    }
+    refreshBombs(); //method to countdown time until new bombs are given to players
     rectMode(CORNER);
-
     fill(0);
     stroke(168);
     strokeWeight(5);
@@ -75,8 +62,8 @@ class Game {
     for (int i=0; i<mapWidth; i++) {
       for (int j=0; j<mapHeight; j++) {
         if (map[i][j].equals("wall")) {
-          fill(168, 168, 168);
-          stroke(168, 168, 168);
+          fill(168);
+          stroke(168);
           strokeWeight(1);  
           rect(squares[i][j].x, squares[i][j].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
         } 
@@ -87,8 +74,14 @@ class Game {
           int y = (int)squares[i][j].y+((gameWidth/2)/mapHeight+6)/2;
           items[i][j].drawImage(x, y, bombWidth, bombHeight);
           if (items[i][j].countdown()) {
-            doExplosion(i, j, items[i][j].power);
+            //doExplosion(i, j, items[i][j].power);
           }
+        } else if (items[i][j]!=null && items[i][j].type.contains("explosion")) {
+          int bombWidth = (int)(gameWidth/2)/mapWidth+6;
+          int bombHeight = (int)(gameWidth/2)/mapHeight+6;
+          int x = (int)squares[i][j].x+((gameWidth/2)/mapWidth+6)/2;
+          int y = (int)squares[i][j].y+((gameWidth/2)/mapHeight+6)/2;
+          items[i][j].drawImage(x, y, bombWidth, bombHeight);
         }
       }
     }
@@ -132,6 +125,16 @@ class Game {
       counter++;
     }
   }
+  
+  public void refreshBombs(){
+    bombRefreshCounter++;
+    if (bombRefreshCounter>300) {
+      bombRefreshCounter = 0;
+      for (Player player : players) {
+        player.getBomb();
+      }
+    }
+  }
 
   public void keyPushed(char key) {
     if (gameRunning) {
@@ -173,8 +176,10 @@ class Game {
           }
         }
       } else if (key == 'q' || key == 'Q') {
-        if (players[0].placeBomb() && items[players[1].x][players[1].y]==null) {
-          items[players[0].x][players[0].y] = new Item("bomb", players[0].power, 3);
+        if (gameRunning) {
+          if (items[players[1].x][players[1].y]==null && players[0].placeBomb()) {
+            items[players[0].x][players[0].y] = new Item("bomb", players[0].power, 3);
+          }
         }
       }
       //player 2
@@ -215,10 +220,11 @@ class Game {
           }
         }
       } else if (key == 'u' || key == 'U') {
-        if (players[1].placeBomb() && items[players[1].x][players[1].y]==null) {
+        if (items[players[1].x][players[1].y]==null && players[1].placeBomb()) {
           items[players[1].x][players[1].y] = new Item("bomb", players[1].power, 3);
         }
       }
     }
   }
+  
 }

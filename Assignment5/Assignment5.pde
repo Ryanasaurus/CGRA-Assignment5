@@ -5,6 +5,7 @@ GameLobby lobby;
 Settings settings;
 Game game;
 int countDown = 5;
+int counter = 0;
 
 
 public void setup() {
@@ -27,6 +28,7 @@ public void draw() {
 
   //draws the main menu
   if (location.equals("main-menu")) {
+    frameRate(60);
     background(0);
     for (Button button : button) {
       button.drawButton();
@@ -50,10 +52,13 @@ public void draw() {
   //draws the game
   else if (location.equals("game")) {
     if (game.gameRunning) {
-      frameRate(60);
+      frameRate(30);
       background(0);    
       game.drawMap();
+      counter++;
+      text(counter, 20, height/2);
     } else {
+      frameRate(1);
       background(0);
       game.drawMap();
       fill(255);
@@ -155,8 +160,9 @@ public void mouseClicked() {
   }
 }
 
-public void keyPressed(){
-  if(location.equals("game")){
+public void keyPressed() {
+  if (location.equals("game")&&game.gameRunning) {
+
     game.keyPushed(key);
   }
 }
