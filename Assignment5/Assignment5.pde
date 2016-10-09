@@ -7,9 +7,10 @@ Game game;
 int countDown = 5;
 
 
-void setup() {
-  fullScreen();
+public void setup() {
+
   //size(1000, 1000);
+  fullScreen();
   background(0);
   logo = loadImage("logo.png");
   button = new Button[2];
@@ -22,7 +23,7 @@ void setup() {
   game = new Game(this.lobby);
 }
 
-void draw() {
+public void draw() {
 
   //draws the main menu
   if (location.equals("main-menu")) {
@@ -67,7 +68,7 @@ void draw() {
   }
 } 
 
-void mouseClicked() {
+public void mouseClicked() {
   boolean clickedButton = false;
   Button buttonClicked = null;
   if (location.equals("main-menu")) {
@@ -154,36 +155,8 @@ void mouseClicked() {
   }
 }
 
-void keyPressed() {
-  if (game.gameRunning) {
-    if (key == 'w' || key == 'W') {
-      game.keysPressed[0]=true;
-    }
-    if (key == 'a' || key == 'A') {
-      game.keysPressed[1]=true;
-    }
-    if (key == 's' || key == 'S') {
-      game.keysPressed[2]=true;
-    }
-    if (key == 'd' || key == 'D') {
-      game.keysPressed[3]=true;
-    }
-  }
-}
-
-void keyReleased() {
-  if (game.gameRunning) {
-    if (key == 'w' || key == 'W') {
-      game.keysPressed[0]=false;
-    }
-    if (key == 'a' || key == 'A') {
-      game.keysPressed[1]=false;
-    }
-    if (key == 's' || key == 'S') {
-      game.keysPressed[2]=false;
-    }
-    if (key == 'd' || key == 'D') {
-      game.keysPressed[3]=false;
-    }
+public void keyPressed(){
+  if(location.equals("game")){
+    game.keyPushed(key);
   }
 }

@@ -2,10 +2,11 @@ class Player {
   int num; 
   int red, green, blue;
   int x, y;
+  int power;
   boolean inGame;
   Button lobbyButton;
   HashMap<String, String> keyMap;
-  int bombsHeld, kills;
+  int bombsHeld;
   public Player(int num, int red, int green, int blue) {
     this.num = num;
     this.red = red;
@@ -16,7 +17,6 @@ class Player {
     lobbyButton.num=this.num-1;
     keyMap = new HashMap<String, String>(); //maps key to action
     bombsHeld = 3;
-    kills = 0;
   }
 
   public void dropIn() {
@@ -33,22 +33,40 @@ class Player {
     lobbyButton.checkHighlight();
     lobbyButton.drawButton();
   }
-  
-  public void drawScore(){
+
+  public void drawScore() {
+    rectMode(CENTER);
     stroke(red, green, blue);
     fill(red, green, blue);
     textSize(32);
     text("Player " + num, 10, height/8*num);
+    for (int i=0; i<bombsHeld; i++) {
+      image(loadImage("bomb.png"), 10*i+10, height/8*num+20, 40, 40);
+    }
   }
-  
-  public void addKeyBinding(String function, String key1){
+
+  public void getBomb() {
+    if (bombsHeld<3) {
+      bombsHeld++;
+    }
+  }
+
+  public void addKeyBinding(String function, String key1) {
     keyMap.put(function, key1);
   }
-  
-  public void updateKeyBinding(String function, String key1){
-    if(keyMap.containsKey(function)){
+
+  public void updateKeyBinding(String function, String key1) {
+    if (keyMap.containsKey(function)) {
       keyMap.remove(function);
       keyMap.put(function, key1);
+    }
+  }
+  public boolean placeBomb() {
+    if (bombsHeld==0) {
+      return false;
+    } else {
+      bombsHeld--; 
+      return true;
     }
   }
 }
