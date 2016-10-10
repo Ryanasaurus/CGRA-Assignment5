@@ -5,27 +5,23 @@ class Game {
   Player[] players; //this array contains the players. is passed from the game lobby class.
   int mapWidth = 16, mapHeight = 16;
   int gameWidth = height-100;
-  //boolean[] keysPressed;
   int moveSpeed;
-  GameLobby lobby;
   boolean gameRunning = false;
   int bombRefreshCounter = 0;
   int powerup1Count = 360, powerup2Count = 540, powerup3Count = 660, powerup4Count = 840;
-  PImage wall = loadImage("wall.png"), bricks = loadImage("bricks.png"), background = loadImage("background.png");
+  PImage wall = loadImage("wall.png"), bricks = loadImage("bricks.png");
 
-  public Game(GameLobby lobby) {    
+  public Game() {    
     map = new String[mapWidth][mapHeight];
-    //players = new Player[4];
-    this.lobby = lobby;
-    //keysPressed = new boolean[4]; //0=w, 1=a, 2=s, 3=d
+    players = new Player[2];
+    players[0] = new Player(1, 50, 50, 255);//blue player 1
+    players[1] = new Player(2, 255, 50, 50);//red player 2
     squares = new PVector[mapWidth][mapHeight]; //array for the x and y co-ordinates of the top left of each square of the grid
     moveSpeed = ((height/mapWidth)/10);
     items = new Item[mapWidth][mapHeight];
   }
 
   public void newMap() {
-
-    this.players = lobby.players;
     for (int i=0; i<mapWidth; i++) {
       for (int j=0; j<mapHeight; j++) {
         squares[i][j] = new PVector((width-height)/2+(height/mapWidth)*i, (height/mapHeight)*j);
@@ -69,54 +65,51 @@ class Game {
     rect(boxX, 0, width-boxX, height);
     doPowerup();
 
+    int squareWidth = gameWidth/mapWidth+6;
+    int squareHeight = gameWidth/mapHeight+6;
+    int itemWidth = (int)(gameWidth/2)/mapHeight+6;
+    int itemHeight = (int)(gameWidth/2)/mapHeight+6;
     for (int i=0; i<mapWidth; i++) {
       for (int j=0; j<mapHeight; j++) {
-        //int x = (int)squares[i][j].x;
-        //int y = (int)squares[i][j].y;
-        if (items[i][j]!=null && map[i][j].equals("blank") && (!items[i][j].type.equals("bomb") || !items[i][j].type.contains("explosion"))) {
-          int itemWidth = (int)(gameWidth/2)/mapWidth+6;
-          int itemHeight = (int)(gameWidth/2)/mapHeight+6;
-          int x = (int)squares[i][j].x+((gameWidth/2)/mapWidth+6)/2;
-          int y = (int)squares[i][j].y+((gameWidth/2)/mapHeight+6)/2;
-          //rect(x, y, itemWidth, itemHeight);
-          items[i][j].drawSprite(x, y, itemWidth, itemHeight);
-        }
-        if (map[i][j].equals("bricks")) {
-          fill(168);
-          stroke(168);
-          strokeWeight(1);  
-          //rect(squares[i][j].x, squares[i][j].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
-          image(bricks, squares[i][j].x, squares[i][j].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
-        } else if (map[i][j].equals("wall")) {
-          image(wall, squares[i][j].x, squares[i][j].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
-          fill(100);
-          stroke(100);
-          strokeWeight(1);  
-          //rect(squares[i][j].x, squares[i][j].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
-        } else if (map[i][j].equals("blank")) {          
-          //image(background, squares[i][j].x, squares[i][j].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
-        }
-        if (items[i][j]!=null && items[i][j].type.equals("bomb")) {
-          int bombWidth = (int)(gameWidth/2)/mapWidth+6;
-          int bombHeight = (int)(gameWidth/2)/mapHeight+6;
-          int x = (int)squares[i][j].x+((gameWidth/2)/mapWidth+6)/2;
-          int y = (int)squares[i][j].y+((gameWidth/2)/mapHeight+6)/2;
-          items[i][j].drawSprite(x, y, bombWidth, bombHeight);
-          if (items[i][j].countdown()) {
-            doExplosion(i, j, items[i][j].power);
+        int x = (int)squares[i][j].x;
+        int y = (int)squares[i][j].y;
+        int itemx = (int)x+itemWidth/2;
+        int itemy = (int)y+itemHeight/2;
+        //strokeWeight(1);  
+
+        //drawing the map and players
+        if (!map[i][j].equals("blank")) {
+          if (map[i][j].equals("bricks")) {
+            image(bricks, x, y, squareWidth, squareHeight);
+          } else if (map[i][j].equals("wall")) {
+            image(wall, x, y, squareWidth, squareHeight);
+          } else if (map[i][j].equals("player1")) {            
+            players[0].drawSprite(x, y, squareWidth, squareHeight);
+          } else if (map[i][j].equals("player2")) {
+            players[1].drawSprite(x, y, squareWidth, squareHeight);
           }
-        } else if (items[i][j]!=null && items[i][j].type.contains("explosion")) {
-          int explosionWidth = (int)(gameWidth/2)/mapWidth+6;
-          int explosionHeight = (int)(gameWidth/2)/mapHeight+6;
-          int x = (int)squares[i][j].x+((gameWidth/2)/mapWidth+6)/2;
-          int y = (int)squares[i][j].y+((gameWidth/2)/mapHeight+6)/2;
-          items[i][j].drawSprite(x, y, explosionWidth, explosionHeight);          
-          if (items[i][j].countdown()) {
-            items[i][j]=null;
+        }
+
+        //drawing the items
+        if (items[i][j]!=null) {
+          if ((items[i][j].type.contains("bomb") || items[i][j].type.contains("Bomb")) && !items[i][j].type.contains("Item")) {
+            items[i][j].drawSprite(itemx, itemy, itemWidth, itemHeight);
+            if (items[i][j].countdown()) {
+              doExplosion(i, j, items[i][j].power, false, false);
+            }
+          } else if (items[i][j].type.contains("explosion")) {
+            items[i][j].drawSprite(itemx, itemy, itemWidth, itemHeight);   
+            if (items[i][j].countdown()) {
+              items[i][j]=null;
+            }
+          } else if (map[i][j].equals("blank")) {
+            items[i][j].drawSprite(itemx, itemy, itemWidth, itemHeight);
           }
         }
       }
     }
+
+    //checking player deaths
     if (items[players[0].x][players[0].y]!=null && items[players[0].x][players[0].y].type.contains("explosion")) {
       players[1].score++;
       restartGame();
@@ -127,121 +120,24 @@ class Game {
       return;
     }
 
-
+    //drawing players score and checking item pickups
     for (Player player : players) {
       player.drawScore();
-      //rectMode(CORNER);
-      //fill(player.red, player.green, player.blue);
-      //stroke(player.red, player.green, player.blue);
-      int imageWidth = (int)(gameWidth)/mapWidth+6;
-      int imageHeight = (int)(gameWidth)/mapHeight+6;
-      int x = (int)squares[player.x][player.y].x;//+((gameWidth)/mapWidth+6)/2;
-      int y = (int)squares[player.x][player.y].y;//+((gameWidth)/mapHeight+6)/2;
-      player.drawSprite(x, y, imageWidth, imageHeight);
-      strokeWeight(1);
-      //rect(squares[player.x][player.y].x, squares[player.x][player.y].y, gameWidth/mapWidth+6, gameWidth/mapHeight+6);
-      if (items[player.x][player.y]!=null && !items[player.x][player.y].type.equals("bomb") && !items[player.x][player.y].type.equals("explosion")) {
-        player.pickupItem(items[player.x][player.y].type);
-        items[player.x][player.y] = null;
+      if (items[player.x][player.y]!=null) {
+        if (!items[player.x][player.y].type.equals("bomb") && !items[player.x][player.y].type.equals("explosion")
+          && (items[player.x][player.y].num!=-2)) {
+          player.pickupItem(items[player.x][player.y].type);
+          items[player.x][player.y] = null;
+        }
       }
     }
   }
 
-  public void doExplosion(int x, int y, int power) {
-    int up = y-1, down = y+1;
-    int left = x-1, right = x+1;
-    items[x][y] = new Item("explosion", 1, 1);
-    int counter = 0;
-    while (up>=0 && counter<power) {
-      if (map[x][up].equals("wall")) { 
-        break;
-      }
-      if (items[x][up]!=null && items[x][up].type.equals("bomb")) {
-        doExplosion(x, up, items[x][up].power);
-      }
-      items[x][up] = new Item("explosion", 1, 1);
 
-      if (map[x][up].equals("bricks")) {
-        map[x][up] = "blank";
-        float itemGen = random(10);
-        if (itemGen>8) {
-          items[x][up].hidingItem = true;
-        }
-        break;
-      }
-      up--;
-      counter++;
-    }
-    counter = 0;
-    while (down<mapHeight && counter<power) {
-      if (map[x][down].equals("wall")) { 
-        break;
-      }
-      if (items[x][down]!=null && items[x][down].type.equals("bomb")) {
-        doExplosion(x, down, items[x][down].power);
-      }
-      items[x][down] = new Item("explosion", 1, 1);
-      if (map[x][down].equals("bricks")) {
-        map[x][down] = "blank";
-        float itemGen = random(10);
-        if (itemGen>8) {
-          items[x][down].hidingItem = true;
-        }
-        break;
-      }
-      down--;
-      counter++;
-    }
-    counter = 0;
-    while (left>=0 && counter<power) {
-      if (map[left][y].equals("wall")) { 
-        break;
-      }
-      if (items[left][y]!=null && items[left][y].type.equals("bomb")) {
-        doExplosion(left, y, items[left][y].power);
-      }
-      items[left][y] = new Item("explosion", 1, 1);
-      if (map[left][y].equals("bricks")) {
-        map[left][y] = "blank";
-        float itemGen = random(10);
-        if (itemGen>8) {
-          items[left][y].hidingItem = true;
-        }
-        break;
-      }
-      left--;
-      counter++;
-    }
-    counter = 0;
-    while (right<mapWidth && counter<power) {
-      if (map[right][y].equals("wall")) { 
-        break;
-      }
-      if (items[right][y]!=null && items[right][y].type.equals("bomb")) {
-        doExplosion(right, y, items[right][y].power);
-      }
-      items[right][y] = new Item("explosion", 1, 1);
-      if (map[right][y].equals("bricks")) {
-        map[right][y] = "blank";
-        float itemGen = random(10);
-        if (itemGen>8) {
-          items[right][y].hidingItem = true;
-        }
-        break;
-      }
-      right++;
-      counter++;
-    }
-  }
-
-  public void doPowerExplosion() {
-  }
-  public void doPierceExplosion() {
-  }
 
   public void refreshBombs() {
     bombRefreshCounter++;
-    if (bombRefreshCounter>180) {
+    if (bombRefreshCounter>3*frameRate) {
       bombRefreshCounter = 0;
       for (Player player : players) {
         player.getBomb();
@@ -263,20 +159,20 @@ class Game {
     powerup3Count--;
     powerup4Count--;
     if (powerup1Count==0) {
-      powerup1Count = 360;
-      items[(int)random(mapWidth)][(int)random(mapHeight)] = new Item("heldBoost", -1, -1);
+      powerup1Count = (int)random(300, 600);
+      items[(int)random(mapWidth-1)][(int)random(mapHeight-1)] = new Item("heldBoost", -1, -1);
     }
     if (powerup2Count==0) {
-      powerup2Count = 540;
-      items[(int)random(mapWidth)][(int)random(mapHeight)] = new Item("blastBoost", -1, -1);
+      powerup2Count = (int)random(300, 600);
+      items[(int)random(mapWidth-1)][(int)random(mapHeight-1)] = new Item("blastBoost", -1, -1);
     }
     if (powerup3Count==0) {
-      powerup3Count = 660;
-      items[(int)random(mapWidth)][(int)random(mapHeight)] = new Item("pierceBomb", -1, -1);
+      powerup3Count = (int)random(500, 700);
+      items[(int)random(mapWidth-1)][(int)random(mapHeight-1)] = new Item("pierceBombItem", -1, -1);
     }
     if (powerup4Count==0) {
-      powerup4Count = 840;
-      items[(int)random(mapWidth)][(int)random(mapHeight)] = new Item("powerBomb", -1, -1);
+      powerup4Count = (int)random(600, 800);
+      items[(int)random(mapWidth-1)][(int)random(mapHeight-1)] = new Item("powerBombItem", -1, -1);
     }
   }
 
@@ -325,16 +221,16 @@ class Game {
         }
       } else if (key == 'q' || key == 'Q') {
         if (gameRunning) {
-          if (items[players[1].x][players[1].y]==null) { 
+          if (items[players[0].x][players[0].y]==null) { 
             int bombType = players[0].placeBomb();
             if (bombType==-1) {
               return;
             } else if (bombType==0) {
-              items[players[0].x][players[0].y] = new Item("bomb", players[0].power, -1);
+              items[players[0].x][players[0].y] = new Item("bomb", players[0].power, -2);
             } else if (bombType==1) {              
-              items[players[0].x][players[0].y] = new Item("pierceBomb", players[0].power, -1);
+              items[players[0].x][players[0].y] = new Item("pierceBomb", players[0].power, -2);
             } else if (bombType==2) {              
-              items[players[0].x][players[0].y] = new Item("powerBomb", players[0].power, -1);
+              items[players[0].x][players[0].y] = new Item("powerBomb", 999, -2);
             }
           }
         }
@@ -380,12 +276,143 @@ class Game {
             players[1].x++;
           }
         }
+      } else if (key == 'u' || key == 'U') {
+        if (gameRunning) {
+          if (items[players[1].x][players[1].y]==null) { 
+            int bombType = players[1].placeBomb();
+            if (bombType==-1) {
+              return;
+            } else if (bombType==0) {
+              items[players[1].x][players[1].y] = new Item("bomb", players[1].power, -2);
+            } else if (bombType==1) {              
+              items[players[1].x][players[1].y] = new Item("pierceBomb", players[1].power, -2);
+            } else if (bombType==2) {              
+              items[players[1].x][players[1].y] = new Item("powerBomb", 999, -2);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //creates the explosion
+  public void doExplosion(int x, int y, int radius, boolean power, boolean pierce) {
+    int up = y-1, down = y+1;
+    int left = x-1, right = x+1;
+    items[x][y] = new Item("explosion", 1, 1);
+    int counter = 0;
+    while (up>=0 && counter<radius) {
+      if (map[x][up].equals("wall")) { 
+        break;
+      }
+      //checks if there is another bomb in the square, if there is, it sets it off
+      if (items[x][up]!=null) {
+        if (items[x][up].type.equals("bomb")) {
+          doExplosion(x, up, items[x][up].power, false, false);
+        } else if (items[x][up].type.equals("powerBomb")) {
+          doExplosion(x, up, mapHeight, true, false);
+        } else if (items[x][up].type.equals("pierceBomb")) {
+          doExplosion(x, up, items[x][up].power, false, true);
+        }
+      }
+      items[x][up] = new Item("explosion", 1, 1);
+
+      if (map[x][up].equals("bricks")) {
+        map[x][up] = "blank";
+        float itemGen = random(10);
+        if (itemGen>7) {
+          items[x][up].hidingItem = true;
+        }
+        if (!pierce) {
+          break;
+        }
       } 
-      //else if (key == 'u' || key == 'U') {
-      //  if (items[players[1].x][players[1].y]==null && players[1].placeBomb()) {
-      //    items[players[1].x][players[1].y] = new Item("bomb", players[1].power, -1);
-      //  }
-      //}
+      up--;
+      counter++;
+    }
+    counter = 0;
+    while (down<mapHeight && counter<radius) {
+      if (map[x][down].equals("wall")) { 
+        break;
+      }
+      if (items[x][down]!=null) {
+        if (items[x][down].type.equals("bomb")) {
+          doExplosion(x, down, items[x][down].power, false, false);
+        } else if (items[x][down].type.equals("powerBomb")) {
+          doExplosion(x, down, mapHeight, true, false);
+        } else if (items[x][down].type.equals("pierceBomb")) {
+          doExplosion(x, down, items[x][down].power, false, true);
+        }
+      }
+      items[x][down] = new Item("explosion", 1, 1);
+      if (map[x][down].equals("bricks")) {
+        map[x][down] = "blank";
+        float itemGen = random(10);
+        if (itemGen>7) {
+          items[x][down].hidingItem = true;
+        }
+        if (!pierce) {
+          break;
+        }
+      }
+      down++;
+      counter++;
+    }
+    counter = 0;
+    while (left>=0 && counter<radius) {
+      if (map[left][y].equals("wall")) { 
+        break;
+      }
+      if (items[left][y]!=null) {
+        if (items[left][y].type.equals("bomb")) {
+          doExplosion(left, y, items[left][y].power, false, false);
+        } else if (items[left][y].type.equals("powerBomb")) {
+          doExplosion(left, y, mapWidth, true, false);
+        } else if (items[left][y].type.equals("pierceBomb")) {
+          doExplosion(left, y, items[left][y].power, false, true);
+        }
+      }
+      items[left][y] = new Item("explosion", 1, 1);
+      if (map[left][y].equals("bricks")) {
+        map[left][y] = "blank";
+        float itemGen = random(10);
+        if (itemGen>7) {
+          items[left][y].hidingItem = true;
+        }
+        if (!pierce) {
+          break;
+        }
+      }
+      left--;
+      counter++;
+    }
+    counter = 0;
+    while (right<mapWidth && counter<radius) {
+      if (map[right][y].equals("wall")) { 
+        break;
+      }
+      if (items[right][y]!=null) {
+        if (items[right][y].type.equals("bomb")) {
+          doExplosion(right, y, items[right][y].power, false, false);
+        } else if (items[right][y].type.equals("powerBomb")) {
+          doExplosion(right, y, mapWidth, true, false);
+        } else if (items[right][y].type.equals("pierceBomb")) {
+          doExplosion(right, y, items[right][y].power, false, true);
+        }
+      }
+      items[right][y] = new Item("explosion", 1, 1);
+      if (map[right][y].equals("bricks")) {
+        map[right][y] = "blank";
+        float itemGen = random(10);
+        if (itemGen>7) {
+          items[right][y].hidingItem = true;
+        }
+        if (!pierce) {
+          break;
+        }
+      }
+      right++;
+      counter++;
     }
   }
 }

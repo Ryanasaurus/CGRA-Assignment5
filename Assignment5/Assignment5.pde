@@ -1,11 +1,8 @@
 PImage logo;
 Button [] button;
 String location;
-GameLobby lobby;
-Settings settings;
 Game game;
 int countDown = 5;
-int counter = 0;
 
 
 public void setup() {
@@ -18,10 +15,7 @@ public void setup() {
   button[0] = new Button(width/2, height/2, width/4, height/10, "Play", 255, 255, 255); //main menu play button
   button[1] = new Button(width/2, 2*(height/3), width/4, height/10, "Settings", 255, 255, 255); //main menu settings button
   location = "main-menu"; //setting the location to main menu
-  lobby = new GameLobby(); //creating the game lobby
-  settings = new Settings(lobby);
-  settings.loadKeys();
-  game = new Game(this.lobby);
+  game = new Game();
 }
 
 public void draw() {
@@ -34,33 +28,22 @@ public void draw() {
       button.drawButton();
       button.checkHighlight();
     }
-    image(logo, width/2-width/8, height/2-height/4);
+    image(logo, width/2-(width/8)/2, height/5, width/8, height/5);
+    textSize(100);
+    fill(255);
+    text("Chicken Bomber", width/2-420, height/8);
   } 
-
-  //draws the settings menu. allows for the changing of keys for different players
-  else if (location.equals("settings")) {
-    background(0);
-    settings.drawSettings();
-  }
-
-  //draws the game lobby
-  else if (location.equals("game-lobby")) {
-    background(0);
-    lobby.drawLobby();
-  }
 
   //draws the game
   else if (location.equals("game")) {
     if (game.gameRunning) {
       frameRate(60);
-      background(0);    
+      background(60);    
       game.drawMap();
-      counter++;
-      text(counter, 20, height/2);
-      text(frameRate, 20, height/2+100);
+
     } else {
       frameRate(1);
-      background(0);
+      background(60);
       game.drawMap();
       fill(255);
       textSize(100);
@@ -85,84 +68,21 @@ public void mouseClicked() {
         break;
       }
     }
-  } else if (location.equals("game-lobby")) {
-    for (Player player : lobby.players) {
-      if (player.lobbyButton.highlighted) {
-        clickedButton = true;
-        buttonClicked=player.lobbyButton;
-        break;
-      }
-    }
-    if (lobby.back.highlighted) {
-      clickedButton = true;
-      buttonClicked = lobby.back;
-    }
-  }
+  } 
   if (!clickedButton) {
     return;
   }
-  if (clickedButton && buttonClicked!=null) {
-    if (location.equals("game-lobby")) {
-
-      //player 1's button was clicked. drops the player in or out of the game
-      if (buttonClicked.name.contains("1")) {
-        if (lobby.players[0].inGame) {
-          lobby.players[0].dropOut();
-          lobby.dropPlayer();
-        } else {
-          lobby.players[0].dropIn();
-          lobby.addPlayer();
-        }
-      } 
-
-      //player 2's button was clicked. drops the player in or out of the game
-      else if (buttonClicked.name.contains("2")) {
-        if (lobby.players[1].inGame) {
-          lobby.players[1].dropOut();
-          lobby.dropPlayer();
-        } else {
-          lobby.players[1].dropIn();
-          lobby.addPlayer();
-        }
-      } 
-
-      //player 3's button was clicked. drops the player in or out of the game
-      else if (buttonClicked.name.contains("3")) {
-        if (lobby.players[2].inGame) {
-          lobby.players[2].dropOut();
-          lobby.dropPlayer();
-        } else {
-          lobby.players[2].dropIn();
-          lobby.addPlayer();
-        }
-      } 
-
-      //player 4's button was clicked. drops the player in or out of the game
-      else if (buttonClicked.name.contains("4")) {
-        if (lobby.players[3].inGame) {
-          lobby.players[3].dropOut();
-          lobby.dropPlayer();
-        } else {
-          lobby.players[3].dropIn();
-          lobby.addPlayer();
-        }
-      } else if (buttonClicked.name.equals("Back")) {
-        location = "main-menu";
-      }
-    }
+  if (clickedButton && buttonClicked!=null) {    
     if (buttonClicked.name.equals("Play")) {
-      //location = "game-lobby";
       location = "game";
       game.newMap();
       frameRate(1);
-    } else if (buttonClicked.name.equals("Settings")) {
-      location = "settings";
-    }
+    } 
   }
 }
 
 public void keyPressed() {
-  if (location.equals("game")&&game.gameRunning) {
+  if (location.equals("game") && game.gameRunning) {
 
     game.keyPushed(key);
   }
