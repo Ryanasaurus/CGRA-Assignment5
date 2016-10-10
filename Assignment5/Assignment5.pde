@@ -10,8 +10,8 @@ int counter = 0;
 
 public void setup() {
 
-  //size(1000, 1000);
-  fullScreen();
+  size(1920, 1080);
+  //fullScreen();
   background(0);
   logo = loadImage("logo.png");
   button = new Button[2];
@@ -52,11 +52,12 @@ public void draw() {
   //draws the game
   else if (location.equals("game")) {
     if (game.gameRunning) {
-      frameRate(30);
+      frameRate(60);
       background(0);    
       game.drawMap();
       counter++;
       text(counter, 20, height/2);
+      text(frameRate, 20, height/2+100);
     } else {
       frameRate(1);
       background(0);

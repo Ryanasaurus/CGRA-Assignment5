@@ -3,32 +3,53 @@ class Item {
   double timer;
   PImage sprite;
   int power;
-  int countdown;
-  //boolean exploded = false;
+  int count;
+  int num;
+  boolean hidingItem = false;
 
-  public Item(String type, int power, double timer) {
+  public Item(String type, int power, int num) {
     timer = 0;
     this.type = type;
-    this.sprite = loadImage(type + ".png");
+    if (num==-1) {
+      this.sprite = loadImage(type + ".png");
+    } else {
+      this.sprite = loadImage(type + num + ".png");
+    }
     this.power = power;
 
-    this.countdown = (int)timer*60+1; //timer is seconds, countdown converts this into a frame-by-frame countdown
+    //this.count = (int)timer*60; //timer is seconds, countdown converts this into a frame-by-frame countdown //this would never work, and i couldnt figure out why
+    if (type.equals("bomb")) {
+      //count = 60;
+      count = (int)(2*frameRate);
+    } else {
+      //count = 18;
+      count = (int)(0.3*frameRate);
+    }
+    this.num = num;
   }
 
-  public void drawImage(int x, int y, int iWidth, int iHeight) {    
+  public void drawSprite(int x, int y, int iWidth, int iHeight) {    
     image(sprite, x, y, iWidth, iHeight);
   }
 
   public boolean countdown() {
-    countdown--;
-    //if (!exploded) {    
-    if (countdown>0) {
+    count-=1;
+    text(count, 10, height-200);
+    if (count>0) {
       return false;
     } else {
-      type = "bomb";
-      this.sprite = loadImage(type + ".png");
-      return true;
+      if (type.equals("bomb")) {
+        //type = "explosion"+num;
+        //this.sprite = loadImage(type + ".png");
+        return true;
+      } else if(num<25){
+        num++;
+        type = "explosion"+num;        
+        this.sprite = loadImage(type + ".png");
+        return false;
+      } else{
+        return true;
+      }
     }
-    //} 
   }
 }
